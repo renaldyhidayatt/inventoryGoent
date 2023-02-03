@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productmasuk"
 	"github.com/renaldyhidayatt/inventorygoent/ent/supplier"
@@ -55,21 +54,15 @@ func (pmc *ProductMasukCreate) SetUpdatedAt(t time.Time) *ProductMasukCreate {
 	return pmc
 }
 
-// SetID sets the "id" field.
-func (pmc *ProductMasukCreate) SetID(u uuid.UUID) *ProductMasukCreate {
-	pmc.mutation.SetID(u)
-	return pmc
-}
-
 // AddProductIDs adds the "product" edge to the Product entity by IDs.
-func (pmc *ProductMasukCreate) AddProductIDs(ids ...uuid.UUID) *ProductMasukCreate {
+func (pmc *ProductMasukCreate) AddProductIDs(ids ...int) *ProductMasukCreate {
 	pmc.mutation.AddProductIDs(ids...)
 	return pmc
 }
 
 // AddProduct adds the "product" edges to the Product entity.
 func (pmc *ProductMasukCreate) AddProduct(p ...*Product) *ProductMasukCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -77,14 +70,14 @@ func (pmc *ProductMasukCreate) AddProduct(p ...*Product) *ProductMasukCreate {
 }
 
 // AddSupplierIDs adds the "supplier" edge to the Supplier entity by IDs.
-func (pmc *ProductMasukCreate) AddSupplierIDs(ids ...uuid.UUID) *ProductMasukCreate {
+func (pmc *ProductMasukCreate) AddSupplierIDs(ids ...int) *ProductMasukCreate {
 	pmc.mutation.AddSupplierIDs(ids...)
 	return pmc
 }
 
 // AddSupplier adds the "supplier" edges to the Supplier entity.
 func (pmc *ProductMasukCreate) AddSupplier(s ...*Supplier) *ProductMasukCreate {
-	ids := make([]uuid.UUID, len(s))
+	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -160,13 +153,8 @@ func (pmc *ProductMasukCreate) sqlSave(ctx context.Context) (*ProductMasuk, erro
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	pmc.mutation.id = &_node.ID
 	pmc.mutation.done = true
 	return _node, nil
@@ -178,15 +166,11 @@ func (pmc *ProductMasukCreate) createSpec() (*ProductMasuk, *sqlgraph.CreateSpec
 		_spec = &sqlgraph.CreateSpec{
 			Table: productmasuk.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productmasuk.FieldID,
 			},
 		}
 	)
-	if id, ok := pmc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := pmc.mutation.Name(); ok {
 		_spec.SetField(productmasuk.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -212,7 +196,7 @@ func (pmc *ProductMasukCreate) createSpec() (*ProductMasuk, *sqlgraph.CreateSpec
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -231,7 +215,7 @@ func (pmc *ProductMasukCreate) createSpec() (*ProductMasuk, *sqlgraph.CreateSpec
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},
@@ -285,6 +269,10 @@ func (pmcb *ProductMasukCreateBulk) Save(ctx context.Context) ([]*ProductMasuk, 
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productmasuk"
@@ -64,14 +63,14 @@ func (pmu *ProductMasukUpdate) SetUpdatedAt(t time.Time) *ProductMasukUpdate {
 }
 
 // AddProductIDs adds the "product" edge to the Product entity by IDs.
-func (pmu *ProductMasukUpdate) AddProductIDs(ids ...uuid.UUID) *ProductMasukUpdate {
+func (pmu *ProductMasukUpdate) AddProductIDs(ids ...int) *ProductMasukUpdate {
 	pmu.mutation.AddProductIDs(ids...)
 	return pmu
 }
 
 // AddProduct adds the "product" edges to the Product entity.
 func (pmu *ProductMasukUpdate) AddProduct(p ...*Product) *ProductMasukUpdate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -79,14 +78,14 @@ func (pmu *ProductMasukUpdate) AddProduct(p ...*Product) *ProductMasukUpdate {
 }
 
 // AddSupplierIDs adds the "supplier" edge to the Supplier entity by IDs.
-func (pmu *ProductMasukUpdate) AddSupplierIDs(ids ...uuid.UUID) *ProductMasukUpdate {
+func (pmu *ProductMasukUpdate) AddSupplierIDs(ids ...int) *ProductMasukUpdate {
 	pmu.mutation.AddSupplierIDs(ids...)
 	return pmu
 }
 
 // AddSupplier adds the "supplier" edges to the Supplier entity.
 func (pmu *ProductMasukUpdate) AddSupplier(s ...*Supplier) *ProductMasukUpdate {
-	ids := make([]uuid.UUID, len(s))
+	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -105,14 +104,14 @@ func (pmu *ProductMasukUpdate) ClearProduct() *ProductMasukUpdate {
 }
 
 // RemoveProductIDs removes the "product" edge to Product entities by IDs.
-func (pmu *ProductMasukUpdate) RemoveProductIDs(ids ...uuid.UUID) *ProductMasukUpdate {
+func (pmu *ProductMasukUpdate) RemoveProductIDs(ids ...int) *ProductMasukUpdate {
 	pmu.mutation.RemoveProductIDs(ids...)
 	return pmu
 }
 
 // RemoveProduct removes "product" edges to Product entities.
 func (pmu *ProductMasukUpdate) RemoveProduct(p ...*Product) *ProductMasukUpdate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -126,14 +125,14 @@ func (pmu *ProductMasukUpdate) ClearSupplier() *ProductMasukUpdate {
 }
 
 // RemoveSupplierIDs removes the "supplier" edge to Supplier entities by IDs.
-func (pmu *ProductMasukUpdate) RemoveSupplierIDs(ids ...uuid.UUID) *ProductMasukUpdate {
+func (pmu *ProductMasukUpdate) RemoveSupplierIDs(ids ...int) *ProductMasukUpdate {
 	pmu.mutation.RemoveSupplierIDs(ids...)
 	return pmu
 }
 
 // RemoveSupplier removes "supplier" edges to Supplier entities.
 func (pmu *ProductMasukUpdate) RemoveSupplier(s ...*Supplier) *ProductMasukUpdate {
-	ids := make([]uuid.UUID, len(s))
+	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -182,7 +181,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   productmasuk.Table,
 			Columns: productmasuk.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productmasuk.FieldID,
 			},
 		},
@@ -215,7 +214,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -231,7 +230,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -250,7 +249,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -269,7 +268,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},
@@ -285,7 +284,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},
@@ -304,7 +303,7 @@ func (pmu *ProductMasukUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},
@@ -367,14 +366,14 @@ func (pmuo *ProductMasukUpdateOne) SetUpdatedAt(t time.Time) *ProductMasukUpdate
 }
 
 // AddProductIDs adds the "product" edge to the Product entity by IDs.
-func (pmuo *ProductMasukUpdateOne) AddProductIDs(ids ...uuid.UUID) *ProductMasukUpdateOne {
+func (pmuo *ProductMasukUpdateOne) AddProductIDs(ids ...int) *ProductMasukUpdateOne {
 	pmuo.mutation.AddProductIDs(ids...)
 	return pmuo
 }
 
 // AddProduct adds the "product" edges to the Product entity.
 func (pmuo *ProductMasukUpdateOne) AddProduct(p ...*Product) *ProductMasukUpdateOne {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -382,14 +381,14 @@ func (pmuo *ProductMasukUpdateOne) AddProduct(p ...*Product) *ProductMasukUpdate
 }
 
 // AddSupplierIDs adds the "supplier" edge to the Supplier entity by IDs.
-func (pmuo *ProductMasukUpdateOne) AddSupplierIDs(ids ...uuid.UUID) *ProductMasukUpdateOne {
+func (pmuo *ProductMasukUpdateOne) AddSupplierIDs(ids ...int) *ProductMasukUpdateOne {
 	pmuo.mutation.AddSupplierIDs(ids...)
 	return pmuo
 }
 
 // AddSupplier adds the "supplier" edges to the Supplier entity.
 func (pmuo *ProductMasukUpdateOne) AddSupplier(s ...*Supplier) *ProductMasukUpdateOne {
-	ids := make([]uuid.UUID, len(s))
+	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -408,14 +407,14 @@ func (pmuo *ProductMasukUpdateOne) ClearProduct() *ProductMasukUpdateOne {
 }
 
 // RemoveProductIDs removes the "product" edge to Product entities by IDs.
-func (pmuo *ProductMasukUpdateOne) RemoveProductIDs(ids ...uuid.UUID) *ProductMasukUpdateOne {
+func (pmuo *ProductMasukUpdateOne) RemoveProductIDs(ids ...int) *ProductMasukUpdateOne {
 	pmuo.mutation.RemoveProductIDs(ids...)
 	return pmuo
 }
 
 // RemoveProduct removes "product" edges to Product entities.
 func (pmuo *ProductMasukUpdateOne) RemoveProduct(p ...*Product) *ProductMasukUpdateOne {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -429,14 +428,14 @@ func (pmuo *ProductMasukUpdateOne) ClearSupplier() *ProductMasukUpdateOne {
 }
 
 // RemoveSupplierIDs removes the "supplier" edge to Supplier entities by IDs.
-func (pmuo *ProductMasukUpdateOne) RemoveSupplierIDs(ids ...uuid.UUID) *ProductMasukUpdateOne {
+func (pmuo *ProductMasukUpdateOne) RemoveSupplierIDs(ids ...int) *ProductMasukUpdateOne {
 	pmuo.mutation.RemoveSupplierIDs(ids...)
 	return pmuo
 }
 
 // RemoveSupplier removes "supplier" edges to Supplier entities.
 func (pmuo *ProductMasukUpdateOne) RemoveSupplier(s ...*Supplier) *ProductMasukUpdateOne {
-	ids := make([]uuid.UUID, len(s))
+	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -492,7 +491,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Table:   productmasuk.Table,
 			Columns: productmasuk.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productmasuk.FieldID,
 			},
 		},
@@ -542,7 +541,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -558,7 +557,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -577,7 +576,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -596,7 +595,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},
@@ -612,7 +611,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},
@@ -631,7 +630,7 @@ func (pmuo *ProductMasukUpdateOne) sqlSave(ctx context.Context) (_node *ProductM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: supplier.FieldID,
 				},
 			},

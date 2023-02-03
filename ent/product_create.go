@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productkeluar"
@@ -62,21 +61,15 @@ func (pc *ProductCreate) SetUpdatedAt(t time.Time) *ProductCreate {
 	return pc
 }
 
-// SetID sets the "id" field.
-func (pc *ProductCreate) SetID(u uuid.UUID) *ProductCreate {
-	pc.mutation.SetID(u)
-	return pc
-}
-
 // AddCategoryIDs adds the "category" edge to the Category entity by IDs.
-func (pc *ProductCreate) AddCategoryIDs(ids ...uuid.UUID) *ProductCreate {
+func (pc *ProductCreate) AddCategoryIDs(ids ...int) *ProductCreate {
 	pc.mutation.AddCategoryIDs(ids...)
 	return pc
 }
 
 // AddCategory adds the "category" edges to the Category entity.
 func (pc *ProductCreate) AddCategory(c ...*Category) *ProductCreate {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -84,14 +77,14 @@ func (pc *ProductCreate) AddCategory(c ...*Category) *ProductCreate {
 }
 
 // AddProductkeluarIDs adds the "productkeluar" edge to the ProductKeluar entity by IDs.
-func (pc *ProductCreate) AddProductkeluarIDs(ids ...uuid.UUID) *ProductCreate {
+func (pc *ProductCreate) AddProductkeluarIDs(ids ...int) *ProductCreate {
 	pc.mutation.AddProductkeluarIDs(ids...)
 	return pc
 }
 
 // AddProductkeluar adds the "productkeluar" edges to the ProductKeluar entity.
 func (pc *ProductCreate) AddProductkeluar(p ...*ProductKeluar) *ProductCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -99,14 +92,14 @@ func (pc *ProductCreate) AddProductkeluar(p ...*ProductKeluar) *ProductCreate {
 }
 
 // AddProductmasukIDs adds the "productmasuk" edge to the ProductMasuk entity by IDs.
-func (pc *ProductCreate) AddProductmasukIDs(ids ...uuid.UUID) *ProductCreate {
+func (pc *ProductCreate) AddProductmasukIDs(ids ...int) *ProductCreate {
 	pc.mutation.AddProductmasukIDs(ids...)
 	return pc
 }
 
 // AddProductmasuk adds the "productmasuk" edges to the ProductMasuk entity.
 func (pc *ProductCreate) AddProductmasuk(p ...*ProductMasuk) *ProductCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -185,13 +178,8 @@ func (pc *ProductCreate) sqlSave(ctx context.Context) (*Product, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	pc.mutation.id = &_node.ID
 	pc.mutation.done = true
 	return _node, nil
@@ -203,15 +191,11 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: product.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: product.FieldID,
 			},
 		}
 	)
-	if id, ok := pc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.SetField(product.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -241,7 +225,7 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: category.FieldID,
 				},
 			},
@@ -260,7 +244,7 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -279,7 +263,7 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productmasuk.FieldID,
 				},
 			},
@@ -333,6 +317,10 @@ func (pcb *ProductCreateBulk) Save(ctx context.Context) ([]*Product, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

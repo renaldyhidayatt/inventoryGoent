@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productmasuk"
 	"github.com/renaldyhidayatt/inventorygoent/ent/supplier"
@@ -107,8 +106,8 @@ func (sq *SupplierQuery) FirstX(ctx context.Context) *Supplier {
 
 // FirstID returns the first Supplier ID from the query.
 // Returns a *NotFoundError when no Supplier ID was found.
-func (sq *SupplierQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (sq *SupplierQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -120,7 +119,7 @@ func (sq *SupplierQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (sq *SupplierQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (sq *SupplierQuery) FirstIDX(ctx context.Context) int {
 	id, err := sq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -158,8 +157,8 @@ func (sq *SupplierQuery) OnlyX(ctx context.Context) *Supplier {
 // OnlyID is like Only, but returns the only Supplier ID in the query.
 // Returns a *NotSingularError when more than one Supplier ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (sq *SupplierQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (sq *SupplierQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -175,7 +174,7 @@ func (sq *SupplierQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (sq *SupplierQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (sq *SupplierQuery) OnlyIDX(ctx context.Context) int {
 	id, err := sq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +202,8 @@ func (sq *SupplierQuery) AllX(ctx context.Context) []*Supplier {
 }
 
 // IDs executes the query and returns a list of Supplier IDs.
-func (sq *SupplierQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (sq *SupplierQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
 	ctx = setContextOp(ctx, sq.ctx, "IDs")
 	if err := sq.Select(supplier.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
@@ -213,7 +212,7 @@ func (sq *SupplierQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (sq *SupplierQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (sq *SupplierQuery) IDsX(ctx context.Context) []int {
 	ids, err := sq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -403,8 +402,8 @@ func (sq *SupplierQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sup
 
 func (sq *SupplierQuery) loadProductmasuk(ctx context.Context, query *ProductMasukQuery, nodes []*Supplier, init func(*Supplier), assign func(*Supplier, *ProductMasuk)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*Supplier)
-	nids := make(map[uuid.UUID]map[*Supplier]struct{})
+	byID := make(map[int]*Supplier)
+	nids := make(map[int]map[*Supplier]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -433,11 +432,11 @@ func (sq *SupplierQuery) loadProductmasuk(ctx context.Context, query *ProductMas
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Supplier]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -478,7 +477,7 @@ func (sq *SupplierQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   supplier.Table,
 			Columns: supplier.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: supplier.FieldID,
 			},
 		},

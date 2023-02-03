@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/customer"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 )
@@ -82,8 +81,8 @@ func (cq *CustomerQuery) FirstX(ctx context.Context) *Customer {
 
 // FirstID returns the first Customer ID from the query.
 // Returns a *NotFoundError when no Customer ID was found.
-func (cq *CustomerQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (cq *CustomerQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +94,7 @@ func (cq *CustomerQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *CustomerQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (cq *CustomerQuery) FirstIDX(ctx context.Context) int {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +132,8 @@ func (cq *CustomerQuery) OnlyX(ctx context.Context) *Customer {
 // OnlyID is like Only, but returns the only Customer ID in the query.
 // Returns a *NotSingularError when more than one Customer ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *CustomerQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (cq *CustomerQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +149,7 @@ func (cq *CustomerQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *CustomerQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (cq *CustomerQuery) OnlyIDX(ctx context.Context) int {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,8 +177,8 @@ func (cq *CustomerQuery) AllX(ctx context.Context) []*Customer {
 }
 
 // IDs executes the query and returns a list of Customer IDs.
-func (cq *CustomerQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (cq *CustomerQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
 	ctx = setContextOp(ctx, cq.ctx, "IDs")
 	if err := cq.Select(customer.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
@@ -188,7 +187,7 @@ func (cq *CustomerQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *CustomerQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (cq *CustomerQuery) IDsX(ctx context.Context) []int {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -368,7 +367,7 @@ func (cq *CustomerQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   customer.Table,
 			Columns: customer.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: customer.FieldID,
 			},
 		},

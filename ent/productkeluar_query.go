@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
@@ -131,8 +130,8 @@ func (pkq *ProductKeluarQuery) FirstX(ctx context.Context) *ProductKeluar {
 
 // FirstID returns the first ProductKeluar ID from the query.
 // Returns a *NotFoundError when no ProductKeluar ID was found.
-func (pkq *ProductKeluarQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (pkq *ProductKeluarQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pkq.Limit(1).IDs(setContextOp(ctx, pkq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -144,7 +143,7 @@ func (pkq *ProductKeluarQuery) FirstID(ctx context.Context) (id uuid.UUID, err e
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pkq *ProductKeluarQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (pkq *ProductKeluarQuery) FirstIDX(ctx context.Context) int {
 	id, err := pkq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -182,8 +181,8 @@ func (pkq *ProductKeluarQuery) OnlyX(ctx context.Context) *ProductKeluar {
 // OnlyID is like Only, but returns the only ProductKeluar ID in the query.
 // Returns a *NotSingularError when more than one ProductKeluar ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pkq *ProductKeluarQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (pkq *ProductKeluarQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pkq.Limit(2).IDs(setContextOp(ctx, pkq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -199,7 +198,7 @@ func (pkq *ProductKeluarQuery) OnlyID(ctx context.Context) (id uuid.UUID, err er
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pkq *ProductKeluarQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (pkq *ProductKeluarQuery) OnlyIDX(ctx context.Context) int {
 	id, err := pkq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -227,8 +226,8 @@ func (pkq *ProductKeluarQuery) AllX(ctx context.Context) []*ProductKeluar {
 }
 
 // IDs executes the query and returns a list of ProductKeluar IDs.
-func (pkq *ProductKeluarQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (pkq *ProductKeluarQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
 	ctx = setContextOp(ctx, pkq.ctx, "IDs")
 	if err := pkq.Select(productkeluar.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
@@ -237,7 +236,7 @@ func (pkq *ProductKeluarQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pkq *ProductKeluarQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (pkq *ProductKeluarQuery) IDsX(ctx context.Context) []int {
 	ids, err := pkq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -447,8 +446,8 @@ func (pkq *ProductKeluarQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 
 func (pkq *ProductKeluarQuery) loadProducts(ctx context.Context, query *ProductQuery, nodes []*ProductKeluar, init func(*ProductKeluar), assign func(*ProductKeluar, *Product)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*ProductKeluar)
-	nids := make(map[uuid.UUID]map[*ProductKeluar]struct{})
+	byID := make(map[int]*ProductKeluar)
+	nids := make(map[int]map[*ProductKeluar]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -477,11 +476,11 @@ func (pkq *ProductKeluarQuery) loadProducts(ctx context.Context, query *ProductQ
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*ProductKeluar]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -508,8 +507,8 @@ func (pkq *ProductKeluarQuery) loadProducts(ctx context.Context, query *ProductQ
 }
 func (pkq *ProductKeluarQuery) loadCategory(ctx context.Context, query *CategoryQuery, nodes []*ProductKeluar, init func(*ProductKeluar), assign func(*ProductKeluar, *Category)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*ProductKeluar)
-	nids := make(map[uuid.UUID]map[*ProductKeluar]struct{})
+	byID := make(map[int]*ProductKeluar)
+	nids := make(map[int]map[*ProductKeluar]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -538,11 +537,11 @@ func (pkq *ProductKeluarQuery) loadCategory(ctx context.Context, query *Category
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*ProductKeluar]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -583,7 +582,7 @@ func (pkq *ProductKeluarQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   productkeluar.Table,
 			Columns: productkeluar.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productkeluar.FieldID,
 			},
 		},

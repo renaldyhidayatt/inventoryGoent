@@ -5,7 +5,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // Customer holds the schema definition for the Customer entity.
@@ -16,7 +15,7 @@ type Customer struct {
 // Fields of the Customer.
 func (Customer) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.New()),
+
 		field.String("name"),
 		field.String("alamat"),
 		field.String("telepon"),

@@ -44,7 +44,7 @@ func (pmd *ProductMasukDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: productmasuk.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productmasuk.FieldID,
 			},
 		},

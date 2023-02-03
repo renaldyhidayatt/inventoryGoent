@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/customer"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
@@ -46,16 +45,16 @@ type CategoryMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *uuid.UUID
+	id                   *int
 	name                 *string
 	created_at           *time.Time
 	updated_at           *time.Time
 	clearedFields        map[string]struct{}
-	products             map[uuid.UUID]struct{}
-	removedproducts      map[uuid.UUID]struct{}
+	products             map[int]struct{}
+	removedproducts      map[int]struct{}
 	clearedproducts      bool
-	productkeluar        map[uuid.UUID]struct{}
-	removedproductkeluar map[uuid.UUID]struct{}
+	productkeluar        map[int]struct{}
+	removedproductkeluar map[int]struct{}
 	clearedproductkeluar bool
 	done                 bool
 	oldValue             func(context.Context) (*Category, error)
@@ -82,7 +81,7 @@ func newCategoryMutation(c config, op Op, opts ...categoryOption) *CategoryMutat
 }
 
 // withCategoryID sets the ID field of the mutation.
-func withCategoryID(id uuid.UUID) categoryOption {
+func withCategoryID(id int) categoryOption {
 	return func(m *CategoryMutation) {
 		var (
 			err   error
@@ -132,15 +131,9 @@ func (m CategoryMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Category entities.
-func (m *CategoryMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *CategoryMutation) ID() (id uuid.UUID, exists bool) {
+func (m *CategoryMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -151,12 +144,12 @@ func (m *CategoryMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *CategoryMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *CategoryMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -275,9 +268,9 @@ func (m *CategoryMutation) ResetUpdatedAt() {
 }
 
 // AddProductIDs adds the "products" edge to the Product entity by ids.
-func (m *CategoryMutation) AddProductIDs(ids ...uuid.UUID) {
+func (m *CategoryMutation) AddProductIDs(ids ...int) {
 	if m.products == nil {
-		m.products = make(map[uuid.UUID]struct{})
+		m.products = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.products[ids[i]] = struct{}{}
@@ -295,9 +288,9 @@ func (m *CategoryMutation) ProductsCleared() bool {
 }
 
 // RemoveProductIDs removes the "products" edge to the Product entity by IDs.
-func (m *CategoryMutation) RemoveProductIDs(ids ...uuid.UUID) {
+func (m *CategoryMutation) RemoveProductIDs(ids ...int) {
 	if m.removedproducts == nil {
-		m.removedproducts = make(map[uuid.UUID]struct{})
+		m.removedproducts = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.products, ids[i])
@@ -306,7 +299,7 @@ func (m *CategoryMutation) RemoveProductIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProducts returns the removed IDs of the "products" edge to the Product entity.
-func (m *CategoryMutation) RemovedProductsIDs() (ids []uuid.UUID) {
+func (m *CategoryMutation) RemovedProductsIDs() (ids []int) {
 	for id := range m.removedproducts {
 		ids = append(ids, id)
 	}
@@ -314,7 +307,7 @@ func (m *CategoryMutation) RemovedProductsIDs() (ids []uuid.UUID) {
 }
 
 // ProductsIDs returns the "products" edge IDs in the mutation.
-func (m *CategoryMutation) ProductsIDs() (ids []uuid.UUID) {
+func (m *CategoryMutation) ProductsIDs() (ids []int) {
 	for id := range m.products {
 		ids = append(ids, id)
 	}
@@ -329,9 +322,9 @@ func (m *CategoryMutation) ResetProducts() {
 }
 
 // AddProductkeluarIDs adds the "productkeluar" edge to the ProductKeluar entity by ids.
-func (m *CategoryMutation) AddProductkeluarIDs(ids ...uuid.UUID) {
+func (m *CategoryMutation) AddProductkeluarIDs(ids ...int) {
 	if m.productkeluar == nil {
-		m.productkeluar = make(map[uuid.UUID]struct{})
+		m.productkeluar = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.productkeluar[ids[i]] = struct{}{}
@@ -349,9 +342,9 @@ func (m *CategoryMutation) ProductkeluarCleared() bool {
 }
 
 // RemoveProductkeluarIDs removes the "productkeluar" edge to the ProductKeluar entity by IDs.
-func (m *CategoryMutation) RemoveProductkeluarIDs(ids ...uuid.UUID) {
+func (m *CategoryMutation) RemoveProductkeluarIDs(ids ...int) {
 	if m.removedproductkeluar == nil {
-		m.removedproductkeluar = make(map[uuid.UUID]struct{})
+		m.removedproductkeluar = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.productkeluar, ids[i])
@@ -360,7 +353,7 @@ func (m *CategoryMutation) RemoveProductkeluarIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProductkeluar returns the removed IDs of the "productkeluar" edge to the ProductKeluar entity.
-func (m *CategoryMutation) RemovedProductkeluarIDs() (ids []uuid.UUID) {
+func (m *CategoryMutation) RemovedProductkeluarIDs() (ids []int) {
 	for id := range m.removedproductkeluar {
 		ids = append(ids, id)
 	}
@@ -368,7 +361,7 @@ func (m *CategoryMutation) RemovedProductkeluarIDs() (ids []uuid.UUID) {
 }
 
 // ProductkeluarIDs returns the "productkeluar" edge IDs in the mutation.
-func (m *CategoryMutation) ProductkeluarIDs() (ids []uuid.UUID) {
+func (m *CategoryMutation) ProductkeluarIDs() (ids []int) {
 	for id := range m.productkeluar {
 		ids = append(ids, id)
 	}
@@ -662,7 +655,7 @@ type CustomerMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *int
 	name          *string
 	alamat        *string
 	telepon       *string
@@ -694,7 +687,7 @@ func newCustomerMutation(c config, op Op, opts ...customerOption) *CustomerMutat
 }
 
 // withCustomerID sets the ID field of the mutation.
-func withCustomerID(id uuid.UUID) customerOption {
+func withCustomerID(id int) customerOption {
 	return func(m *CustomerMutation) {
 		var (
 			err   error
@@ -744,15 +737,9 @@ func (m CustomerMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Customer entities.
-func (m *CustomerMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *CustomerMutation) ID() (id uuid.UUID, exists bool) {
+func (m *CustomerMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -763,12 +750,12 @@ func (m *CustomerMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *CustomerMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *CustomerMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1210,21 +1197,21 @@ type ProductMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *uuid.UUID
+	id                   *int
 	name                 *string
 	image                *string
 	qty                  *string
 	created_at           *time.Time
 	updated_at           *time.Time
 	clearedFields        map[string]struct{}
-	category             map[uuid.UUID]struct{}
-	removedcategory      map[uuid.UUID]struct{}
+	category             map[int]struct{}
+	removedcategory      map[int]struct{}
 	clearedcategory      bool
-	productkeluar        map[uuid.UUID]struct{}
-	removedproductkeluar map[uuid.UUID]struct{}
+	productkeluar        map[int]struct{}
+	removedproductkeluar map[int]struct{}
 	clearedproductkeluar bool
-	productmasuk         map[uuid.UUID]struct{}
-	removedproductmasuk  map[uuid.UUID]struct{}
+	productmasuk         map[int]struct{}
+	removedproductmasuk  map[int]struct{}
 	clearedproductmasuk  bool
 	done                 bool
 	oldValue             func(context.Context) (*Product, error)
@@ -1251,7 +1238,7 @@ func newProductMutation(c config, op Op, opts ...productOption) *ProductMutation
 }
 
 // withProductID sets the ID field of the mutation.
-func withProductID(id uuid.UUID) productOption {
+func withProductID(id int) productOption {
 	return func(m *ProductMutation) {
 		var (
 			err   error
@@ -1301,15 +1288,9 @@ func (m ProductMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Product entities.
-func (m *ProductMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ProductMutation) ID() (id uuid.UUID, exists bool) {
+func (m *ProductMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1320,12 +1301,12 @@ func (m *ProductMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ProductMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *ProductMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1516,9 +1497,9 @@ func (m *ProductMutation) ResetUpdatedAt() {
 }
 
 // AddCategoryIDs adds the "category" edge to the Category entity by ids.
-func (m *ProductMutation) AddCategoryIDs(ids ...uuid.UUID) {
+func (m *ProductMutation) AddCategoryIDs(ids ...int) {
 	if m.category == nil {
-		m.category = make(map[uuid.UUID]struct{})
+		m.category = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.category[ids[i]] = struct{}{}
@@ -1536,9 +1517,9 @@ func (m *ProductMutation) CategoryCleared() bool {
 }
 
 // RemoveCategoryIDs removes the "category" edge to the Category entity by IDs.
-func (m *ProductMutation) RemoveCategoryIDs(ids ...uuid.UUID) {
+func (m *ProductMutation) RemoveCategoryIDs(ids ...int) {
 	if m.removedcategory == nil {
-		m.removedcategory = make(map[uuid.UUID]struct{})
+		m.removedcategory = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.category, ids[i])
@@ -1547,7 +1528,7 @@ func (m *ProductMutation) RemoveCategoryIDs(ids ...uuid.UUID) {
 }
 
 // RemovedCategory returns the removed IDs of the "category" edge to the Category entity.
-func (m *ProductMutation) RemovedCategoryIDs() (ids []uuid.UUID) {
+func (m *ProductMutation) RemovedCategoryIDs() (ids []int) {
 	for id := range m.removedcategory {
 		ids = append(ids, id)
 	}
@@ -1555,7 +1536,7 @@ func (m *ProductMutation) RemovedCategoryIDs() (ids []uuid.UUID) {
 }
 
 // CategoryIDs returns the "category" edge IDs in the mutation.
-func (m *ProductMutation) CategoryIDs() (ids []uuid.UUID) {
+func (m *ProductMutation) CategoryIDs() (ids []int) {
 	for id := range m.category {
 		ids = append(ids, id)
 	}
@@ -1570,9 +1551,9 @@ func (m *ProductMutation) ResetCategory() {
 }
 
 // AddProductkeluarIDs adds the "productkeluar" edge to the ProductKeluar entity by ids.
-func (m *ProductMutation) AddProductkeluarIDs(ids ...uuid.UUID) {
+func (m *ProductMutation) AddProductkeluarIDs(ids ...int) {
 	if m.productkeluar == nil {
-		m.productkeluar = make(map[uuid.UUID]struct{})
+		m.productkeluar = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.productkeluar[ids[i]] = struct{}{}
@@ -1590,9 +1571,9 @@ func (m *ProductMutation) ProductkeluarCleared() bool {
 }
 
 // RemoveProductkeluarIDs removes the "productkeluar" edge to the ProductKeluar entity by IDs.
-func (m *ProductMutation) RemoveProductkeluarIDs(ids ...uuid.UUID) {
+func (m *ProductMutation) RemoveProductkeluarIDs(ids ...int) {
 	if m.removedproductkeluar == nil {
-		m.removedproductkeluar = make(map[uuid.UUID]struct{})
+		m.removedproductkeluar = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.productkeluar, ids[i])
@@ -1601,7 +1582,7 @@ func (m *ProductMutation) RemoveProductkeluarIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProductkeluar returns the removed IDs of the "productkeluar" edge to the ProductKeluar entity.
-func (m *ProductMutation) RemovedProductkeluarIDs() (ids []uuid.UUID) {
+func (m *ProductMutation) RemovedProductkeluarIDs() (ids []int) {
 	for id := range m.removedproductkeluar {
 		ids = append(ids, id)
 	}
@@ -1609,7 +1590,7 @@ func (m *ProductMutation) RemovedProductkeluarIDs() (ids []uuid.UUID) {
 }
 
 // ProductkeluarIDs returns the "productkeluar" edge IDs in the mutation.
-func (m *ProductMutation) ProductkeluarIDs() (ids []uuid.UUID) {
+func (m *ProductMutation) ProductkeluarIDs() (ids []int) {
 	for id := range m.productkeluar {
 		ids = append(ids, id)
 	}
@@ -1624,9 +1605,9 @@ func (m *ProductMutation) ResetProductkeluar() {
 }
 
 // AddProductmasukIDs adds the "productmasuk" edge to the ProductMasuk entity by ids.
-func (m *ProductMutation) AddProductmasukIDs(ids ...uuid.UUID) {
+func (m *ProductMutation) AddProductmasukIDs(ids ...int) {
 	if m.productmasuk == nil {
-		m.productmasuk = make(map[uuid.UUID]struct{})
+		m.productmasuk = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.productmasuk[ids[i]] = struct{}{}
@@ -1644,9 +1625,9 @@ func (m *ProductMutation) ProductmasukCleared() bool {
 }
 
 // RemoveProductmasukIDs removes the "productmasuk" edge to the ProductMasuk entity by IDs.
-func (m *ProductMutation) RemoveProductmasukIDs(ids ...uuid.UUID) {
+func (m *ProductMutation) RemoveProductmasukIDs(ids ...int) {
 	if m.removedproductmasuk == nil {
-		m.removedproductmasuk = make(map[uuid.UUID]struct{})
+		m.removedproductmasuk = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.productmasuk, ids[i])
@@ -1655,7 +1636,7 @@ func (m *ProductMutation) RemoveProductmasukIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProductmasuk returns the removed IDs of the "productmasuk" edge to the ProductMasuk entity.
-func (m *ProductMutation) RemovedProductmasukIDs() (ids []uuid.UUID) {
+func (m *ProductMutation) RemovedProductmasukIDs() (ids []int) {
 	for id := range m.removedproductmasuk {
 		ids = append(ids, id)
 	}
@@ -1663,7 +1644,7 @@ func (m *ProductMutation) RemovedProductmasukIDs() (ids []uuid.UUID) {
 }
 
 // ProductmasukIDs returns the "productmasuk" edge IDs in the mutation.
-func (m *ProductMutation) ProductmasukIDs() (ids []uuid.UUID) {
+func (m *ProductMutation) ProductmasukIDs() (ids []int) {
 	for id := range m.productmasuk {
 		ids = append(ids, id)
 	}
@@ -2017,16 +1998,16 @@ type ProductKeluarMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *uuid.UUID
+	id              *int
 	qty             *string
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
-	products        map[uuid.UUID]struct{}
-	removedproducts map[uuid.UUID]struct{}
+	products        map[int]struct{}
+	removedproducts map[int]struct{}
 	clearedproducts bool
-	category        map[uuid.UUID]struct{}
-	removedcategory map[uuid.UUID]struct{}
+	category        map[int]struct{}
+	removedcategory map[int]struct{}
 	clearedcategory bool
 	done            bool
 	oldValue        func(context.Context) (*ProductKeluar, error)
@@ -2053,7 +2034,7 @@ func newProductKeluarMutation(c config, op Op, opts ...productkeluarOption) *Pro
 }
 
 // withProductKeluarID sets the ID field of the mutation.
-func withProductKeluarID(id uuid.UUID) productkeluarOption {
+func withProductKeluarID(id int) productkeluarOption {
 	return func(m *ProductKeluarMutation) {
 		var (
 			err   error
@@ -2103,15 +2084,9 @@ func (m ProductKeluarMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of ProductKeluar entities.
-func (m *ProductKeluarMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ProductKeluarMutation) ID() (id uuid.UUID, exists bool) {
+func (m *ProductKeluarMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2122,12 +2097,12 @@ func (m *ProductKeluarMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ProductKeluarMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *ProductKeluarMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -2246,9 +2221,9 @@ func (m *ProductKeluarMutation) ResetUpdatedAt() {
 }
 
 // AddProductIDs adds the "products" edge to the Product entity by ids.
-func (m *ProductKeluarMutation) AddProductIDs(ids ...uuid.UUID) {
+func (m *ProductKeluarMutation) AddProductIDs(ids ...int) {
 	if m.products == nil {
-		m.products = make(map[uuid.UUID]struct{})
+		m.products = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.products[ids[i]] = struct{}{}
@@ -2266,9 +2241,9 @@ func (m *ProductKeluarMutation) ProductsCleared() bool {
 }
 
 // RemoveProductIDs removes the "products" edge to the Product entity by IDs.
-func (m *ProductKeluarMutation) RemoveProductIDs(ids ...uuid.UUID) {
+func (m *ProductKeluarMutation) RemoveProductIDs(ids ...int) {
 	if m.removedproducts == nil {
-		m.removedproducts = make(map[uuid.UUID]struct{})
+		m.removedproducts = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.products, ids[i])
@@ -2277,7 +2252,7 @@ func (m *ProductKeluarMutation) RemoveProductIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProducts returns the removed IDs of the "products" edge to the Product entity.
-func (m *ProductKeluarMutation) RemovedProductsIDs() (ids []uuid.UUID) {
+func (m *ProductKeluarMutation) RemovedProductsIDs() (ids []int) {
 	for id := range m.removedproducts {
 		ids = append(ids, id)
 	}
@@ -2285,7 +2260,7 @@ func (m *ProductKeluarMutation) RemovedProductsIDs() (ids []uuid.UUID) {
 }
 
 // ProductsIDs returns the "products" edge IDs in the mutation.
-func (m *ProductKeluarMutation) ProductsIDs() (ids []uuid.UUID) {
+func (m *ProductKeluarMutation) ProductsIDs() (ids []int) {
 	for id := range m.products {
 		ids = append(ids, id)
 	}
@@ -2300,9 +2275,9 @@ func (m *ProductKeluarMutation) ResetProducts() {
 }
 
 // AddCategoryIDs adds the "category" edge to the Category entity by ids.
-func (m *ProductKeluarMutation) AddCategoryIDs(ids ...uuid.UUID) {
+func (m *ProductKeluarMutation) AddCategoryIDs(ids ...int) {
 	if m.category == nil {
-		m.category = make(map[uuid.UUID]struct{})
+		m.category = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.category[ids[i]] = struct{}{}
@@ -2320,9 +2295,9 @@ func (m *ProductKeluarMutation) CategoryCleared() bool {
 }
 
 // RemoveCategoryIDs removes the "category" edge to the Category entity by IDs.
-func (m *ProductKeluarMutation) RemoveCategoryIDs(ids ...uuid.UUID) {
+func (m *ProductKeluarMutation) RemoveCategoryIDs(ids ...int) {
 	if m.removedcategory == nil {
-		m.removedcategory = make(map[uuid.UUID]struct{})
+		m.removedcategory = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.category, ids[i])
@@ -2331,7 +2306,7 @@ func (m *ProductKeluarMutation) RemoveCategoryIDs(ids ...uuid.UUID) {
 }
 
 // RemovedCategory returns the removed IDs of the "category" edge to the Category entity.
-func (m *ProductKeluarMutation) RemovedCategoryIDs() (ids []uuid.UUID) {
+func (m *ProductKeluarMutation) RemovedCategoryIDs() (ids []int) {
 	for id := range m.removedcategory {
 		ids = append(ids, id)
 	}
@@ -2339,7 +2314,7 @@ func (m *ProductKeluarMutation) RemovedCategoryIDs() (ids []uuid.UUID) {
 }
 
 // CategoryIDs returns the "category" edge IDs in the mutation.
-func (m *ProductKeluarMutation) CategoryIDs() (ids []uuid.UUID) {
+func (m *ProductKeluarMutation) CategoryIDs() (ids []int) {
 	for id := range m.category {
 		ids = append(ids, id)
 	}
@@ -2633,17 +2608,17 @@ type ProductMasukMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *uuid.UUID
+	id              *int
 	name            *string
 	qty             *string
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
-	product         map[uuid.UUID]struct{}
-	removedproduct  map[uuid.UUID]struct{}
+	product         map[int]struct{}
+	removedproduct  map[int]struct{}
 	clearedproduct  bool
-	supplier        map[uuid.UUID]struct{}
-	removedsupplier map[uuid.UUID]struct{}
+	supplier        map[int]struct{}
+	removedsupplier map[int]struct{}
 	clearedsupplier bool
 	done            bool
 	oldValue        func(context.Context) (*ProductMasuk, error)
@@ -2670,7 +2645,7 @@ func newProductMasukMutation(c config, op Op, opts ...productmasukOption) *Produ
 }
 
 // withProductMasukID sets the ID field of the mutation.
-func withProductMasukID(id uuid.UUID) productmasukOption {
+func withProductMasukID(id int) productmasukOption {
 	return func(m *ProductMasukMutation) {
 		var (
 			err   error
@@ -2720,15 +2695,9 @@ func (m ProductMasukMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of ProductMasuk entities.
-func (m *ProductMasukMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ProductMasukMutation) ID() (id uuid.UUID, exists bool) {
+func (m *ProductMasukMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2739,12 +2708,12 @@ func (m *ProductMasukMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ProductMasukMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *ProductMasukMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -2899,9 +2868,9 @@ func (m *ProductMasukMutation) ResetUpdatedAt() {
 }
 
 // AddProductIDs adds the "product" edge to the Product entity by ids.
-func (m *ProductMasukMutation) AddProductIDs(ids ...uuid.UUID) {
+func (m *ProductMasukMutation) AddProductIDs(ids ...int) {
 	if m.product == nil {
-		m.product = make(map[uuid.UUID]struct{})
+		m.product = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.product[ids[i]] = struct{}{}
@@ -2919,9 +2888,9 @@ func (m *ProductMasukMutation) ProductCleared() bool {
 }
 
 // RemoveProductIDs removes the "product" edge to the Product entity by IDs.
-func (m *ProductMasukMutation) RemoveProductIDs(ids ...uuid.UUID) {
+func (m *ProductMasukMutation) RemoveProductIDs(ids ...int) {
 	if m.removedproduct == nil {
-		m.removedproduct = make(map[uuid.UUID]struct{})
+		m.removedproduct = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.product, ids[i])
@@ -2930,7 +2899,7 @@ func (m *ProductMasukMutation) RemoveProductIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProduct returns the removed IDs of the "product" edge to the Product entity.
-func (m *ProductMasukMutation) RemovedProductIDs() (ids []uuid.UUID) {
+func (m *ProductMasukMutation) RemovedProductIDs() (ids []int) {
 	for id := range m.removedproduct {
 		ids = append(ids, id)
 	}
@@ -2938,7 +2907,7 @@ func (m *ProductMasukMutation) RemovedProductIDs() (ids []uuid.UUID) {
 }
 
 // ProductIDs returns the "product" edge IDs in the mutation.
-func (m *ProductMasukMutation) ProductIDs() (ids []uuid.UUID) {
+func (m *ProductMasukMutation) ProductIDs() (ids []int) {
 	for id := range m.product {
 		ids = append(ids, id)
 	}
@@ -2953,9 +2922,9 @@ func (m *ProductMasukMutation) ResetProduct() {
 }
 
 // AddSupplierIDs adds the "supplier" edge to the Supplier entity by ids.
-func (m *ProductMasukMutation) AddSupplierIDs(ids ...uuid.UUID) {
+func (m *ProductMasukMutation) AddSupplierIDs(ids ...int) {
 	if m.supplier == nil {
-		m.supplier = make(map[uuid.UUID]struct{})
+		m.supplier = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.supplier[ids[i]] = struct{}{}
@@ -2973,9 +2942,9 @@ func (m *ProductMasukMutation) SupplierCleared() bool {
 }
 
 // RemoveSupplierIDs removes the "supplier" edge to the Supplier entity by IDs.
-func (m *ProductMasukMutation) RemoveSupplierIDs(ids ...uuid.UUID) {
+func (m *ProductMasukMutation) RemoveSupplierIDs(ids ...int) {
 	if m.removedsupplier == nil {
-		m.removedsupplier = make(map[uuid.UUID]struct{})
+		m.removedsupplier = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.supplier, ids[i])
@@ -2984,7 +2953,7 @@ func (m *ProductMasukMutation) RemoveSupplierIDs(ids ...uuid.UUID) {
 }
 
 // RemovedSupplier returns the removed IDs of the "supplier" edge to the Supplier entity.
-func (m *ProductMasukMutation) RemovedSupplierIDs() (ids []uuid.UUID) {
+func (m *ProductMasukMutation) RemovedSupplierIDs() (ids []int) {
 	for id := range m.removedsupplier {
 		ids = append(ids, id)
 	}
@@ -2992,7 +2961,7 @@ func (m *ProductMasukMutation) RemovedSupplierIDs() (ids []uuid.UUID) {
 }
 
 // SupplierIDs returns the "supplier" edge IDs in the mutation.
-func (m *ProductMasukMutation) SupplierIDs() (ids []uuid.UUID) {
+func (m *ProductMasukMutation) SupplierIDs() (ids []int) {
 	for id := range m.supplier {
 		ids = append(ids, id)
 	}
@@ -3303,15 +3272,15 @@ type SupplierMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *uuid.UUID
+	id                  *int
 	name                *string
 	alamat              *string
 	telepon             *string
 	created_at          *time.Time
 	updated_at          *time.Time
 	clearedFields       map[string]struct{}
-	productmasuk        map[uuid.UUID]struct{}
-	removedproductmasuk map[uuid.UUID]struct{}
+	productmasuk        map[int]struct{}
+	removedproductmasuk map[int]struct{}
 	clearedproductmasuk bool
 	done                bool
 	oldValue            func(context.Context) (*Supplier, error)
@@ -3338,7 +3307,7 @@ func newSupplierMutation(c config, op Op, opts ...supplierOption) *SupplierMutat
 }
 
 // withSupplierID sets the ID field of the mutation.
-func withSupplierID(id uuid.UUID) supplierOption {
+func withSupplierID(id int) supplierOption {
 	return func(m *SupplierMutation) {
 		var (
 			err   error
@@ -3388,15 +3357,9 @@ func (m SupplierMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Supplier entities.
-func (m *SupplierMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *SupplierMutation) ID() (id uuid.UUID, exists bool) {
+func (m *SupplierMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -3407,12 +3370,12 @@ func (m *SupplierMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *SupplierMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *SupplierMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -3603,9 +3566,9 @@ func (m *SupplierMutation) ResetUpdatedAt() {
 }
 
 // AddProductmasukIDs adds the "productmasuk" edge to the ProductMasuk entity by ids.
-func (m *SupplierMutation) AddProductmasukIDs(ids ...uuid.UUID) {
+func (m *SupplierMutation) AddProductmasukIDs(ids ...int) {
 	if m.productmasuk == nil {
-		m.productmasuk = make(map[uuid.UUID]struct{})
+		m.productmasuk = make(map[int]struct{})
 	}
 	for i := range ids {
 		m.productmasuk[ids[i]] = struct{}{}
@@ -3623,9 +3586,9 @@ func (m *SupplierMutation) ProductmasukCleared() bool {
 }
 
 // RemoveProductmasukIDs removes the "productmasuk" edge to the ProductMasuk entity by IDs.
-func (m *SupplierMutation) RemoveProductmasukIDs(ids ...uuid.UUID) {
+func (m *SupplierMutation) RemoveProductmasukIDs(ids ...int) {
 	if m.removedproductmasuk == nil {
-		m.removedproductmasuk = make(map[uuid.UUID]struct{})
+		m.removedproductmasuk = make(map[int]struct{})
 	}
 	for i := range ids {
 		delete(m.productmasuk, ids[i])
@@ -3634,7 +3597,7 @@ func (m *SupplierMutation) RemoveProductmasukIDs(ids ...uuid.UUID) {
 }
 
 // RemovedProductmasuk returns the removed IDs of the "productmasuk" edge to the ProductMasuk entity.
-func (m *SupplierMutation) RemovedProductmasukIDs() (ids []uuid.UUID) {
+func (m *SupplierMutation) RemovedProductmasukIDs() (ids []int) {
 	for id := range m.removedproductmasuk {
 		ids = append(ids, id)
 	}
@@ -3642,7 +3605,7 @@ func (m *SupplierMutation) RemovedProductmasukIDs() (ids []uuid.UUID) {
 }
 
 // ProductmasukIDs returns the "productmasuk" edge IDs in the mutation.
-func (m *SupplierMutation) ProductmasukIDs() (ids []uuid.UUID) {
+func (m *SupplierMutation) ProductmasukIDs() (ids []int) {
 	for id := range m.productmasuk {
 		ids = append(ids, id)
 	}
@@ -3944,7 +3907,7 @@ type UserMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *int
 	firstname     *string
 	lastname      *string
 	email         *string
@@ -3977,7 +3940,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id uuid.UUID) userOption {
+func withUserID(id int) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -4027,15 +3990,9 @@ func (m UserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
+func (m *UserMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -4046,12 +4003,12 @@ func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
@@ -155,8 +154,8 @@ func (pq *ProductQuery) FirstX(ctx context.Context) *Product {
 
 // FirstID returns the first Product ID from the query.
 // Returns a *NotFoundError when no Product ID was found.
-func (pq *ProductQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (pq *ProductQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -168,7 +167,7 @@ func (pq *ProductQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *ProductQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (pq *ProductQuery) FirstIDX(ctx context.Context) int {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -206,8 +205,8 @@ func (pq *ProductQuery) OnlyX(ctx context.Context) *Product {
 // OnlyID is like Only, but returns the only Product ID in the query.
 // Returns a *NotSingularError when more than one Product ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *ProductQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (pq *ProductQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -223,7 +222,7 @@ func (pq *ProductQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *ProductQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (pq *ProductQuery) OnlyIDX(ctx context.Context) int {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -251,8 +250,8 @@ func (pq *ProductQuery) AllX(ctx context.Context) []*Product {
 }
 
 // IDs executes the query and returns a list of Product IDs.
-func (pq *ProductQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (pq *ProductQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
 	ctx = setContextOp(ctx, pq.ctx, "IDs")
 	if err := pq.Select(product.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
@@ -261,7 +260,7 @@ func (pq *ProductQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *ProductQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (pq *ProductQuery) IDsX(ctx context.Context) []int {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -491,8 +490,8 @@ func (pq *ProductQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Prod
 
 func (pq *ProductQuery) loadCategory(ctx context.Context, query *CategoryQuery, nodes []*Product, init func(*Product), assign func(*Product, *Category)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*Product)
-	nids := make(map[uuid.UUID]map[*Product]struct{})
+	byID := make(map[int]*Product)
+	nids := make(map[int]map[*Product]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -521,11 +520,11 @@ func (pq *ProductQuery) loadCategory(ctx context.Context, query *CategoryQuery, 
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Product]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -552,8 +551,8 @@ func (pq *ProductQuery) loadCategory(ctx context.Context, query *CategoryQuery, 
 }
 func (pq *ProductQuery) loadProductkeluar(ctx context.Context, query *ProductKeluarQuery, nodes []*Product, init func(*Product), assign func(*Product, *ProductKeluar)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*Product)
-	nids := make(map[uuid.UUID]map[*Product]struct{})
+	byID := make(map[int]*Product)
+	nids := make(map[int]map[*Product]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -582,11 +581,11 @@ func (pq *ProductQuery) loadProductkeluar(ctx context.Context, query *ProductKel
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Product]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -613,8 +612,8 @@ func (pq *ProductQuery) loadProductkeluar(ctx context.Context, query *ProductKel
 }
 func (pq *ProductQuery) loadProductmasuk(ctx context.Context, query *ProductMasukQuery, nodes []*Product, init func(*Product), assign func(*Product, *ProductMasuk)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*Product)
-	nids := make(map[uuid.UUID]map[*Product]struct{})
+	byID := make(map[int]*Product)
+	nids := make(map[int]map[*Product]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -643,11 +642,11 @@ func (pq *ProductQuery) loadProductmasuk(ctx context.Context, query *ProductMasu
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*Product]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -688,7 +687,7 @@ func (pq *ProductQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   product.Table,
 			Columns: product.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: product.FieldID,
 			},
 		},

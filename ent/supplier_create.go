@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productmasuk"
 	"github.com/renaldyhidayatt/inventorygoent/ent/supplier"
 )
@@ -60,21 +59,15 @@ func (sc *SupplierCreate) SetUpdatedAt(t time.Time) *SupplierCreate {
 	return sc
 }
 
-// SetID sets the "id" field.
-func (sc *SupplierCreate) SetID(u uuid.UUID) *SupplierCreate {
-	sc.mutation.SetID(u)
-	return sc
-}
-
 // AddProductmasukIDs adds the "productmasuk" edge to the ProductMasuk entity by IDs.
-func (sc *SupplierCreate) AddProductmasukIDs(ids ...uuid.UUID) *SupplierCreate {
+func (sc *SupplierCreate) AddProductmasukIDs(ids ...int) *SupplierCreate {
 	sc.mutation.AddProductmasukIDs(ids...)
 	return sc
 }
 
 // AddProductmasuk adds the "productmasuk" edges to the ProductMasuk entity.
 func (sc *SupplierCreate) AddProductmasuk(p ...*ProductMasuk) *SupplierCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -153,13 +146,8 @@ func (sc *SupplierCreate) sqlSave(ctx context.Context) (*Supplier, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	sc.mutation.id = &_node.ID
 	sc.mutation.done = true
 	return _node, nil
@@ -171,15 +159,11 @@ func (sc *SupplierCreate) createSpec() (*Supplier, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: supplier.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: supplier.FieldID,
 			},
 		}
 	)
-	if id, ok := sc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := sc.mutation.Name(); ok {
 		_spec.SetField(supplier.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -209,7 +193,7 @@ func (sc *SupplierCreate) createSpec() (*Supplier, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productmasuk.FieldID,
 				},
 			},
@@ -263,6 +247,10 @@ func (scb *SupplierCreateBulk) Save(ctx context.Context) ([]*Supplier, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

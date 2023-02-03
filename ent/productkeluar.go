@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productkeluar"
 )
 
@@ -16,7 +15,7 @@ import (
 type ProductKeluar struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
 	// Qty holds the value of the "qty" field.
 	Qty string `json:"qty,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -62,12 +61,12 @@ func (*ProductKeluar) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case productkeluar.FieldID:
+			values[i] = new(sql.NullInt64)
 		case productkeluar.FieldQty:
 			values[i] = new(sql.NullString)
 		case productkeluar.FieldCreatedAt, productkeluar.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case productkeluar.FieldID:
-			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type ProductKeluar", columns[i])
 		}
@@ -84,11 +83,11 @@ func (pk *ProductKeluar) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case productkeluar.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				pk.ID = *value
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			pk.ID = int(value.Int64)
 		case productkeluar.FieldQty:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field qty", values[i])

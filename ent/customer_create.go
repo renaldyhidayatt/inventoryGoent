@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/customer"
 )
 
@@ -56,12 +55,6 @@ func (cc *CustomerCreate) SetNillableCreatedAt(t *time.Time) *CustomerCreate {
 // SetUpdatedAt sets the "updated_at" field.
 func (cc *CustomerCreate) SetUpdatedAt(t time.Time) *CustomerCreate {
 	cc.mutation.SetUpdatedAt(t)
-	return cc
-}
-
-// SetID sets the "id" field.
-func (cc *CustomerCreate) SetID(u uuid.UUID) *CustomerCreate {
-	cc.mutation.SetID(u)
 	return cc
 }
 
@@ -137,13 +130,8 @@ func (cc *CustomerCreate) sqlSave(ctx context.Context) (*Customer, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -155,15 +143,11 @@ func (cc *CustomerCreate) createSpec() (*Customer, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: customer.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: customer.FieldID,
 			},
 		}
 	)
-	if id, ok := cc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(customer.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -228,6 +212,10 @@ func (ccb *CustomerCreateBulk) Save(ctx context.Context) ([]*Customer, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

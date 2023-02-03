@@ -7,52 +7,51 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.ProductKeluar {
+func ID(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.ProductKeluar {
+func IDEQ(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.ProductKeluar {
+func IDNEQ(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.ProductKeluar {
+func IDIn(ids ...int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.ProductKeluar {
+func IDNotIn(ids ...int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.ProductKeluar {
+func IDGT(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.ProductKeluar {
+func IDGTE(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.ProductKeluar {
+func IDLT(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.ProductKeluar {
+func IDLTE(id int) predicate.ProductKeluar {
 	return predicate.ProductKeluar(sql.FieldLTE(FieldID, id))
 }
 

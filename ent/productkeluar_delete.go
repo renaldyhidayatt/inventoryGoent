@@ -44,7 +44,7 @@ func (pkd *ProductKeluarDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: productkeluar.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productkeluar.FieldID,
 			},
 		},

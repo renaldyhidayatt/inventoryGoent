@@ -10,7 +10,7 @@ import (
 var (
 	// CategoriesColumns holds the columns for the "categories" table.
 	CategoriesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -23,7 +23,7 @@ var (
 	}
 	// CustomersColumns holds the columns for the "customers" table.
 	CustomersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "alamat", Type: field.TypeString},
 		{Name: "telepon", Type: field.TypeString},
@@ -38,7 +38,7 @@ var (
 	}
 	// ProductsColumns holds the columns for the "products" table.
 	ProductsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "image", Type: field.TypeString},
 		{Name: "qty", Type: field.TypeString},
@@ -53,7 +53,7 @@ var (
 	}
 	// ProductKeluarsColumns holds the columns for the "product_keluars" table.
 	ProductKeluarsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "qty", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -66,7 +66,7 @@ var (
 	}
 	// ProductMasuksColumns holds the columns for the "product_masuks" table.
 	ProductMasuksColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "qty", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
@@ -80,7 +80,7 @@ var (
 	}
 	// SuppliersColumns holds the columns for the "suppliers" table.
 	SuppliersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "alamat", Type: field.TypeString},
 		{Name: "telepon", Type: field.TypeString},
@@ -95,7 +95,7 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "firstname", Type: field.TypeString},
 		{Name: "lastname", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
@@ -111,8 +111,8 @@ var (
 	}
 	// CategoryProductkeluarColumns holds the columns for the "category_productkeluar" table.
 	CategoryProductkeluarColumns = []*schema.Column{
-		{Name: "category_id", Type: field.TypeUUID},
-		{Name: "product_keluar_id", Type: field.TypeUUID},
+		{Name: "category_id", Type: field.TypeInt},
+		{Name: "product_keluar_id", Type: field.TypeInt},
 	}
 	// CategoryProductkeluarTable holds the schema information for the "category_productkeluar" table.
 	CategoryProductkeluarTable = &schema.Table{
@@ -136,8 +136,8 @@ var (
 	}
 	// ProductCategoryColumns holds the columns for the "product_category" table.
 	ProductCategoryColumns = []*schema.Column{
-		{Name: "product_id", Type: field.TypeUUID},
-		{Name: "category_id", Type: field.TypeUUID},
+		{Name: "product_id", Type: field.TypeInt},
+		{Name: "category_id", Type: field.TypeInt},
 	}
 	// ProductCategoryTable holds the schema information for the "product_category" table.
 	ProductCategoryTable = &schema.Table{
@@ -161,8 +161,8 @@ var (
 	}
 	// ProductProductkeluarColumns holds the columns for the "product_productkeluar" table.
 	ProductProductkeluarColumns = []*schema.Column{
-		{Name: "product_id", Type: field.TypeUUID},
-		{Name: "product_keluar_id", Type: field.TypeUUID},
+		{Name: "product_id", Type: field.TypeInt},
+		{Name: "product_keluar_id", Type: field.TypeInt},
 	}
 	// ProductProductkeluarTable holds the schema information for the "product_productkeluar" table.
 	ProductProductkeluarTable = &schema.Table{
@@ -186,8 +186,8 @@ var (
 	}
 	// ProductProductmasukColumns holds the columns for the "product_productmasuk" table.
 	ProductProductmasukColumns = []*schema.Column{
-		{Name: "product_id", Type: field.TypeUUID},
-		{Name: "product_masuk_id", Type: field.TypeUUID},
+		{Name: "product_id", Type: field.TypeInt},
+		{Name: "product_masuk_id", Type: field.TypeInt},
 	}
 	// ProductProductmasukTable holds the schema information for the "product_productmasuk" table.
 	ProductProductmasukTable = &schema.Table{
@@ -211,8 +211,8 @@ var (
 	}
 	// ProductMasukSupplierColumns holds the columns for the "product_masuk_supplier" table.
 	ProductMasukSupplierColumns = []*schema.Column{
-		{Name: "product_masuk_id", Type: field.TypeUUID},
-		{Name: "supplier_id", Type: field.TypeUUID},
+		{Name: "product_masuk_id", Type: field.TypeInt},
+		{Name: "supplier_id", Type: field.TypeInt},
 	}
 	// ProductMasukSupplierTable holds the schema information for the "product_masuk_supplier" table.
 	ProductMasukSupplierTable = &schema.Table{

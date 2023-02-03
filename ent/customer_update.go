@@ -113,7 +113,7 @@ func (cu *CustomerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   customer.Table,
 			Columns: customer.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: customer.FieldID,
 			},
 		},
@@ -252,7 +252,7 @@ func (cuo *CustomerUpdateOne) sqlSave(ctx context.Context) (_node *Customer, err
 			Table:   customer.Table,
 			Columns: customer.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: customer.FieldID,
 			},
 		},

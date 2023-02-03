@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productkeluar"
@@ -49,21 +48,15 @@ func (pkc *ProductKeluarCreate) SetUpdatedAt(t time.Time) *ProductKeluarCreate {
 	return pkc
 }
 
-// SetID sets the "id" field.
-func (pkc *ProductKeluarCreate) SetID(u uuid.UUID) *ProductKeluarCreate {
-	pkc.mutation.SetID(u)
-	return pkc
-}
-
 // AddProductIDs adds the "products" edge to the Product entity by IDs.
-func (pkc *ProductKeluarCreate) AddProductIDs(ids ...uuid.UUID) *ProductKeluarCreate {
+func (pkc *ProductKeluarCreate) AddProductIDs(ids ...int) *ProductKeluarCreate {
 	pkc.mutation.AddProductIDs(ids...)
 	return pkc
 }
 
 // AddProducts adds the "products" edges to the Product entity.
 func (pkc *ProductKeluarCreate) AddProducts(p ...*Product) *ProductKeluarCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -71,14 +64,14 @@ func (pkc *ProductKeluarCreate) AddProducts(p ...*Product) *ProductKeluarCreate 
 }
 
 // AddCategoryIDs adds the "category" edge to the Category entity by IDs.
-func (pkc *ProductKeluarCreate) AddCategoryIDs(ids ...uuid.UUID) *ProductKeluarCreate {
+func (pkc *ProductKeluarCreate) AddCategoryIDs(ids ...int) *ProductKeluarCreate {
 	pkc.mutation.AddCategoryIDs(ids...)
 	return pkc
 }
 
 // AddCategory adds the "category" edges to the Category entity.
 func (pkc *ProductKeluarCreate) AddCategory(c ...*Category) *ProductKeluarCreate {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -151,13 +144,8 @@ func (pkc *ProductKeluarCreate) sqlSave(ctx context.Context) (*ProductKeluar, er
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	pkc.mutation.id = &_node.ID
 	pkc.mutation.done = true
 	return _node, nil
@@ -169,15 +157,11 @@ func (pkc *ProductKeluarCreate) createSpec() (*ProductKeluar, *sqlgraph.CreateSp
 		_spec = &sqlgraph.CreateSpec{
 			Table: productkeluar.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productkeluar.FieldID,
 			},
 		}
 	)
-	if id, ok := pkc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := pkc.mutation.Qty(); ok {
 		_spec.SetField(productkeluar.FieldQty, field.TypeString, value)
 		_node.Qty = value
@@ -199,7 +183,7 @@ func (pkc *ProductKeluarCreate) createSpec() (*ProductKeluar, *sqlgraph.CreateSp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -218,7 +202,7 @@ func (pkc *ProductKeluarCreate) createSpec() (*ProductKeluar, *sqlgraph.CreateSp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: category.FieldID,
 				},
 			},
@@ -272,6 +256,10 @@ func (pkcb *ProductKeluarCreateBulk) Save(ctx context.Context) ([]*ProductKeluar
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

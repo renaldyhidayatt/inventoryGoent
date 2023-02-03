@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
@@ -58,14 +57,14 @@ func (cu *CategoryUpdate) SetUpdatedAt(t time.Time) *CategoryUpdate {
 }
 
 // AddProductIDs adds the "products" edge to the Product entity by IDs.
-func (cu *CategoryUpdate) AddProductIDs(ids ...uuid.UUID) *CategoryUpdate {
+func (cu *CategoryUpdate) AddProductIDs(ids ...int) *CategoryUpdate {
 	cu.mutation.AddProductIDs(ids...)
 	return cu
 }
 
 // AddProducts adds the "products" edges to the Product entity.
 func (cu *CategoryUpdate) AddProducts(p ...*Product) *CategoryUpdate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -73,14 +72,14 @@ func (cu *CategoryUpdate) AddProducts(p ...*Product) *CategoryUpdate {
 }
 
 // AddProductkeluarIDs adds the "productkeluar" edge to the ProductKeluar entity by IDs.
-func (cu *CategoryUpdate) AddProductkeluarIDs(ids ...uuid.UUID) *CategoryUpdate {
+func (cu *CategoryUpdate) AddProductkeluarIDs(ids ...int) *CategoryUpdate {
 	cu.mutation.AddProductkeluarIDs(ids...)
 	return cu
 }
 
 // AddProductkeluar adds the "productkeluar" edges to the ProductKeluar entity.
 func (cu *CategoryUpdate) AddProductkeluar(p ...*ProductKeluar) *CategoryUpdate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -99,14 +98,14 @@ func (cu *CategoryUpdate) ClearProducts() *CategoryUpdate {
 }
 
 // RemoveProductIDs removes the "products" edge to Product entities by IDs.
-func (cu *CategoryUpdate) RemoveProductIDs(ids ...uuid.UUID) *CategoryUpdate {
+func (cu *CategoryUpdate) RemoveProductIDs(ids ...int) *CategoryUpdate {
 	cu.mutation.RemoveProductIDs(ids...)
 	return cu
 }
 
 // RemoveProducts removes "products" edges to Product entities.
 func (cu *CategoryUpdate) RemoveProducts(p ...*Product) *CategoryUpdate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -120,14 +119,14 @@ func (cu *CategoryUpdate) ClearProductkeluar() *CategoryUpdate {
 }
 
 // RemoveProductkeluarIDs removes the "productkeluar" edge to ProductKeluar entities by IDs.
-func (cu *CategoryUpdate) RemoveProductkeluarIDs(ids ...uuid.UUID) *CategoryUpdate {
+func (cu *CategoryUpdate) RemoveProductkeluarIDs(ids ...int) *CategoryUpdate {
 	cu.mutation.RemoveProductkeluarIDs(ids...)
 	return cu
 }
 
 // RemoveProductkeluar removes "productkeluar" edges to ProductKeluar entities.
 func (cu *CategoryUpdate) RemoveProductkeluar(p ...*ProductKeluar) *CategoryUpdate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -176,7 +175,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   category.Table,
 			Columns: category.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: category.FieldID,
 			},
 		},
@@ -206,7 +205,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -222,7 +221,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -241,7 +240,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -260,7 +259,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -276,7 +275,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -295,7 +294,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -352,14 +351,14 @@ func (cuo *CategoryUpdateOne) SetUpdatedAt(t time.Time) *CategoryUpdateOne {
 }
 
 // AddProductIDs adds the "products" edge to the Product entity by IDs.
-func (cuo *CategoryUpdateOne) AddProductIDs(ids ...uuid.UUID) *CategoryUpdateOne {
+func (cuo *CategoryUpdateOne) AddProductIDs(ids ...int) *CategoryUpdateOne {
 	cuo.mutation.AddProductIDs(ids...)
 	return cuo
 }
 
 // AddProducts adds the "products" edges to the Product entity.
 func (cuo *CategoryUpdateOne) AddProducts(p ...*Product) *CategoryUpdateOne {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -367,14 +366,14 @@ func (cuo *CategoryUpdateOne) AddProducts(p ...*Product) *CategoryUpdateOne {
 }
 
 // AddProductkeluarIDs adds the "productkeluar" edge to the ProductKeluar entity by IDs.
-func (cuo *CategoryUpdateOne) AddProductkeluarIDs(ids ...uuid.UUID) *CategoryUpdateOne {
+func (cuo *CategoryUpdateOne) AddProductkeluarIDs(ids ...int) *CategoryUpdateOne {
 	cuo.mutation.AddProductkeluarIDs(ids...)
 	return cuo
 }
 
 // AddProductkeluar adds the "productkeluar" edges to the ProductKeluar entity.
 func (cuo *CategoryUpdateOne) AddProductkeluar(p ...*ProductKeluar) *CategoryUpdateOne {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -393,14 +392,14 @@ func (cuo *CategoryUpdateOne) ClearProducts() *CategoryUpdateOne {
 }
 
 // RemoveProductIDs removes the "products" edge to Product entities by IDs.
-func (cuo *CategoryUpdateOne) RemoveProductIDs(ids ...uuid.UUID) *CategoryUpdateOne {
+func (cuo *CategoryUpdateOne) RemoveProductIDs(ids ...int) *CategoryUpdateOne {
 	cuo.mutation.RemoveProductIDs(ids...)
 	return cuo
 }
 
 // RemoveProducts removes "products" edges to Product entities.
 func (cuo *CategoryUpdateOne) RemoveProducts(p ...*Product) *CategoryUpdateOne {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -414,14 +413,14 @@ func (cuo *CategoryUpdateOne) ClearProductkeluar() *CategoryUpdateOne {
 }
 
 // RemoveProductkeluarIDs removes the "productkeluar" edge to ProductKeluar entities by IDs.
-func (cuo *CategoryUpdateOne) RemoveProductkeluarIDs(ids ...uuid.UUID) *CategoryUpdateOne {
+func (cuo *CategoryUpdateOne) RemoveProductkeluarIDs(ids ...int) *CategoryUpdateOne {
 	cuo.mutation.RemoveProductkeluarIDs(ids...)
 	return cuo
 }
 
 // RemoveProductkeluar removes "productkeluar" edges to ProductKeluar entities.
 func (cuo *CategoryUpdateOne) RemoveProductkeluar(p ...*ProductKeluar) *CategoryUpdateOne {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -477,7 +476,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Table:   category.Table,
 			Columns: category.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: category.FieldID,
 			},
 		},
@@ -524,7 +523,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -540,7 +539,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -559,7 +558,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -578,7 +577,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -594,7 +593,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -613,7 +612,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},

@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/predicate"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productmasuk"
@@ -131,8 +130,8 @@ func (pmq *ProductMasukQuery) FirstX(ctx context.Context) *ProductMasuk {
 
 // FirstID returns the first ProductMasuk ID from the query.
 // Returns a *NotFoundError when no ProductMasuk ID was found.
-func (pmq *ProductMasukQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (pmq *ProductMasukQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pmq.Limit(1).IDs(setContextOp(ctx, pmq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -144,7 +143,7 @@ func (pmq *ProductMasukQuery) FirstID(ctx context.Context) (id uuid.UUID, err er
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pmq *ProductMasukQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (pmq *ProductMasukQuery) FirstIDX(ctx context.Context) int {
 	id, err := pmq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -182,8 +181,8 @@ func (pmq *ProductMasukQuery) OnlyX(ctx context.Context) *ProductMasuk {
 // OnlyID is like Only, but returns the only ProductMasuk ID in the query.
 // Returns a *NotSingularError when more than one ProductMasuk ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pmq *ProductMasukQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (pmq *ProductMasukQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = pmq.Limit(2).IDs(setContextOp(ctx, pmq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -199,7 +198,7 @@ func (pmq *ProductMasukQuery) OnlyID(ctx context.Context) (id uuid.UUID, err err
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pmq *ProductMasukQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (pmq *ProductMasukQuery) OnlyIDX(ctx context.Context) int {
 	id, err := pmq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -227,8 +226,8 @@ func (pmq *ProductMasukQuery) AllX(ctx context.Context) []*ProductMasuk {
 }
 
 // IDs executes the query and returns a list of ProductMasuk IDs.
-func (pmq *ProductMasukQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (pmq *ProductMasukQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
 	ctx = setContextOp(ctx, pmq.ctx, "IDs")
 	if err := pmq.Select(productmasuk.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
@@ -237,7 +236,7 @@ func (pmq *ProductMasukQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pmq *ProductMasukQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (pmq *ProductMasukQuery) IDsX(ctx context.Context) []int {
 	ids, err := pmq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -447,8 +446,8 @@ func (pmq *ProductMasukQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 
 func (pmq *ProductMasukQuery) loadProduct(ctx context.Context, query *ProductQuery, nodes []*ProductMasuk, init func(*ProductMasuk), assign func(*ProductMasuk, *Product)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*ProductMasuk)
-	nids := make(map[uuid.UUID]map[*ProductMasuk]struct{})
+	byID := make(map[int]*ProductMasuk)
+	nids := make(map[int]map[*ProductMasuk]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -477,11 +476,11 @@ func (pmq *ProductMasukQuery) loadProduct(ctx context.Context, query *ProductQue
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*ProductMasuk]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -508,8 +507,8 @@ func (pmq *ProductMasukQuery) loadProduct(ctx context.Context, query *ProductQue
 }
 func (pmq *ProductMasukQuery) loadSupplier(ctx context.Context, query *SupplierQuery, nodes []*ProductMasuk, init func(*ProductMasuk), assign func(*ProductMasuk, *Supplier)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*ProductMasuk)
-	nids := make(map[uuid.UUID]map[*ProductMasuk]struct{})
+	byID := make(map[int]*ProductMasuk)
+	nids := make(map[int]map[*ProductMasuk]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -538,11 +537,11 @@ func (pmq *ProductMasukQuery) loadSupplier(ctx context.Context, query *SupplierQ
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(uuid.UUID)}, values...), nil
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*ProductMasuk]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -583,7 +582,7 @@ func (pmq *ProductMasukQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   productmasuk.Table,
 			Columns: productmasuk.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: productmasuk.FieldID,
 			},
 		},

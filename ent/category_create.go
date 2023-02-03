@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/renaldyhidayatt/inventorygoent/ent/category"
 	"github.com/renaldyhidayatt/inventorygoent/ent/product"
 	"github.com/renaldyhidayatt/inventorygoent/ent/productkeluar"
@@ -49,21 +48,15 @@ func (cc *CategoryCreate) SetUpdatedAt(t time.Time) *CategoryCreate {
 	return cc
 }
 
-// SetID sets the "id" field.
-func (cc *CategoryCreate) SetID(u uuid.UUID) *CategoryCreate {
-	cc.mutation.SetID(u)
-	return cc
-}
-
 // AddProductIDs adds the "products" edge to the Product entity by IDs.
-func (cc *CategoryCreate) AddProductIDs(ids ...uuid.UUID) *CategoryCreate {
+func (cc *CategoryCreate) AddProductIDs(ids ...int) *CategoryCreate {
 	cc.mutation.AddProductIDs(ids...)
 	return cc
 }
 
 // AddProducts adds the "products" edges to the Product entity.
 func (cc *CategoryCreate) AddProducts(p ...*Product) *CategoryCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -71,14 +64,14 @@ func (cc *CategoryCreate) AddProducts(p ...*Product) *CategoryCreate {
 }
 
 // AddProductkeluarIDs adds the "productkeluar" edge to the ProductKeluar entity by IDs.
-func (cc *CategoryCreate) AddProductkeluarIDs(ids ...uuid.UUID) *CategoryCreate {
+func (cc *CategoryCreate) AddProductkeluarIDs(ids ...int) *CategoryCreate {
 	cc.mutation.AddProductkeluarIDs(ids...)
 	return cc
 }
 
 // AddProductkeluar adds the "productkeluar" edges to the ProductKeluar entity.
 func (cc *CategoryCreate) AddProductkeluar(p ...*ProductKeluar) *CategoryCreate {
-	ids := make([]uuid.UUID, len(p))
+	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -151,13 +144,8 @@ func (cc *CategoryCreate) sqlSave(ctx context.Context) (*Category, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -169,15 +157,11 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: category.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: category.FieldID,
 			},
 		}
 	)
-	if id, ok := cc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(category.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -199,7 +183,7 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: product.FieldID,
 				},
 			},
@@ -218,7 +202,7 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeInt,
 					Column: productkeluar.FieldID,
 				},
 			},
@@ -272,6 +256,10 @@ func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
