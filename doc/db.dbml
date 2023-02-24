@@ -1,0 +1,103 @@
+Table "categories" {
+  "id" bigint [not null]
+  "name" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Table "category_productkeluar" {
+  "category_id" bigint [not null]
+  "product_keluar_id" bigint [not null]
+}
+
+Table "customers" {
+  "id" bigint [not null]
+  "name" "character varying" [not null]
+  "alamat" "character varying" [not null]
+  "telepon" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Table "product_category" {
+  "product_id" bigint [not null]
+  "category_id" bigint [not null]
+}
+
+Table "product_keluars" {
+  "id" bigint [not null]
+  "qty" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Table "product_masuk_supplier" {
+  "product_masuk_id" bigint [not null]
+  "supplier_id" bigint [not null]
+}
+
+Table "product_masuks" {
+  "id" bigint [not null]
+  "name" "character varying" [not null]
+  "qty" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Table "product_productkeluar" {
+  "product_id" bigint [not null]
+  "product_keluar_id" bigint [not null]
+}
+
+Table "product_productmasuk" {
+  "product_id" bigint [not null]
+  "product_masuk_id" bigint [not null]
+}
+
+Table "products" {
+  "id" bigint [not null]
+  "name" "character varying" [not null]
+  "image" "character varying" [not null]
+  "qty" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Table "suppliers" {
+  "id" bigint [not null]
+  "name" "character varying" [not null]
+  "alamat" "character varying" [not null]
+  "telepon" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Table "users" {
+  "id" bigint [not null]
+  "firstname" "character varying" [not null]
+  "lastname" "character varying" [not null]
+  "email" "character varying" [not null]
+  "password" "character varying" [not null]
+  "created_at" timestamp [not null]
+  "updated_at" timestamp [not null]
+}
+
+Ref "category_productkeluar_category_id":"categories"."id" < "category_productkeluar"."category_id" [delete: cascade]
+
+Ref "category_productkeluar_product_keluar_id":"product_keluars"."id" < "category_productkeluar"."product_keluar_id" [delete: cascade]
+
+Ref "product_category_category_id":"categories"."id" < "product_category"."category_id" [delete: cascade]
+
+Ref "product_category_product_id":"products"."id" < "product_category"."product_id" [delete: cascade]
+
+Ref "product_masuk_supplier_product_masuk_id":"product_masuks"."id" < "product_masuk_supplier"."product_masuk_id" [delete: cascade]
+
+Ref "product_masuk_supplier_supplier_id":"suppliers"."id" < "product_masuk_supplier"."supplier_id" [delete: cascade]
+
+Ref "product_productkeluar_product_id":"products"."id" < "product_productkeluar"."product_id" [delete: cascade]
+
+Ref "product_productkeluar_product_keluar_id":"product_keluars"."id" < "product_productkeluar"."product_keluar_id" [delete: cascade]
+
+Ref "product_productmasuk_product_id":"products"."id" < "product_productmasuk"."product_id" [delete: cascade]
+
+Ref "product_productmasuk_product_masuk_id":"product_masuks"."id" < "product_productmasuk"."product_masuk_id" [delete: cascade]
